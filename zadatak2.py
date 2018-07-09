@@ -21,5 +21,4 @@ for g in neponovljene:
 			brojac = brojac + 1
 		recnik[g] = brojac
 for a, b in recnik.items():
-	if a != () :
-		print(a, b)
+	print(a, b)
