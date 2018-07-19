@@ -1,0 +1,21 @@
+Šta program radi i zašto je svaka linija tu gde jeste:
+
+- Uz pomoć list comprehensiona smo pojedinačne podatke iz korpusa pretvorili u listu lema, pritom uklonivši svu suvišnu interpunkciju.
+
+- Za pravljenje liste prefiksa smo koristili koristili Slaganje i prefiksaciju od Ivana Klajna. U poglavlju Imenice sa prefiksima popisuje prefikse domaćeg i stranog porekla koji mogu da stoje uz imenice. Ispisali smo sve prefikse domaćeg porekla, kao i njihove alomorfe, bilo oni obezvučeni, ozvučeni, prošireni ili izmenjeni (Klajn je napravio ovu podelu alomorfa u ranijim poglavljima). Stavili smo ih u listu pod nazivom 'listaprefiksa'. Zbog toga što se prefiks pa u celom korpusu javio samo u reči paperje, a u skladu sa Klajnovim stavom da se on danas među govornicima ne oseti kao prefiks, odlučili smo da ga izuzmemo iz liste prefiksa, uz naknadno ručno dodavanje reči paperje.
+
+- Glavni deo našeg koda je funkcija prefiksator, koja za svoj argument uzima reč iz liste lema (npr. pretčas)
+
+- Program prvo prolazi kroz for petlju i proverava da li reč počinje jednim od prefiksa iz liste prefiksa (prefiks pret u reči pretčas)
+
+- U slučaju da počinje, prvi uslov je da proveri da li je ostatak reči u listi lema. Ako se ovaj uslov ispuni, moze se sa velikom verovatnoćom reći da reč zaista ima prefiks.
+
+- Međutim, već smo na početku uvideli da taj uslov nije dovoljan, jer postoje reči koje imaju neleksikalizovanu osnovu, ali svejedno imaju prefiks (npr. natpis). Stoga je uvedena nova for petlja koja prolazi kroz listu prefiksa (kroz novu petlju se prolazi samo ako prethodni uslov nije ispunjen). Za svaki prefiks u drugom for-u, program upoređujući sa listom lema, proverava može li se ostatak reči prefigirati tim prefiksom. Ukoliko se ovaj uslov ispuni, reč se ispisuje u izlazni fajl.
+
+- Čest slučaj kod imenica nastalih prefiksalno-sufiksalnom tvorbom bio je taj da, kada se prefiks od reči odvoji prefiks, ostatak reči ne postoji kao samostalna reč (npr. primorje). Stoga smo uveli listu sufiksa, koju smo sastavili na osnovu primera iz Klajnovog poglavlja o prefiksalno-sufiksalnoj tvorbi (2.4). Ukoliko dakle ostatak reči nije leksikalizovan, program proverava završava li se reč sufiksom, u kom slučaju se ta reč zapisuje u zaseban fajl za imenice pravljene prefiksalno-sufiksalnom tvorbom, koji će se dalje posebno programski obraditi.
+
+- Postoje slučajevi poput reči samopožrtvovanje, koja ima dva prefiksa. Program u prvom traženju ne bi mogao prepoznati i njen drugi prefiks, te posle utvrđene leksikalizovanosti reči bez prvog prefiksa, funkcija prefiksator u rekurziji ponovo prolazi kroz sve uslove. Pre rekurzije, program redefiniše originalnu reč tako da je ona bez prefiksa (samopožrtvovanje → požrtvovanje), i tek takva reč prolazi još jednom kroz prefiksator. Ulaskom u prvu for petlju, program prepoznaje prefiks po, posle čega program pokušava da ispuni jedan od dva početna kriterijuma. Ako uspe, u odgovarajući fajl ispisuju se svi pronađeni prefiksi i reč.
+
+- Kasnije su dodata dva uslova za nastavak rekurzije (4. tačka), a to je da ostatak reči ne sme biti kraći od dva karaktera (u reči suza, i su i za su pronađeni kao prefiksi, tako da je ostatak reči bio prazna niska, što lako zadovoljava drugi uslov; poredeći bez ovog uslova reči sneg i prag program bi došao do zaključka da su u njima prefiksi s i ne, odnosno pra) niti sme biti jednak bilo kom prefiksu ili sufiksu. Drugi dodati uslov je da ostatak reči ne sme da bude u listi sufiksa (npr. proba), jer se tad takođe lako može ispuniti drugi kriterijum provere reči. Ako je bilo koji od ova dva slučaja ispunjen, rekurzija se prekida.
+
+- Pre provere svake sledeće reči, sve dotadašnje promenljive su ispražnjene, da se podaci iz prethodnih provera ne bi ponovili i u sledećoj reči.
